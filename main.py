@@ -1,5 +1,6 @@
 import os
 import datetime
+import re
 # function Clear Screen
 def clearScreen():
     os.system("cls") if os.name == "nt" else os.system("clear")
@@ -20,7 +21,7 @@ def loadUser(fileName = "users.txt"):
 # function Save Users 
 def saveUsers(userName, password, fileName = "users.txt"):
     with open(fileName, "a") as file:
-        file.write(f"{userName}: {password}\n")
+        file.write(f"{userName}:{password}\n")
 
 # function sign Up
 def signUp(users):
@@ -31,9 +32,26 @@ def signUp(users):
         print("❌ Username already exists, please choose another one")
 
     else:
-        users[userName] = password
-        saveUsers(userName, password)
-        print("✅ You have been successfully added")
+        password_pattern = (
+            r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)"
+            r"(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$"
+        )
+
+        if re.fullmatch(password_pattern, password):
+            users[userName] = password
+            saveUsers(userName, password)
+            print("✅ You have been successfully added")
+        else:
+            print(
+                "The password must contain:\n"
+                "- At least one capital letter\n"
+                "- At least one small letter\n"
+                "- At least one number\n"
+                "- At least one special character (!@#$%^&*)\n"
+                "- Minimum length of 8 characters"
+            )
+            input("\nPress Enter to continue...")
+        
 
 # function logIn
 def logIn(users):
